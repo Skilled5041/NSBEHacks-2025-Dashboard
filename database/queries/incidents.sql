@@ -18,3 +18,6 @@ select * from incidents where id = $1;
 
 -- name: CreateIncident :one
 insert into incidents (incident_name, victim_name, gps_coordinates, incident_time, status) values ($1, $2, $3, $4, $5) returning *;
+
+-- name: ResolveIncident :one
+update incidents set status = 'resolved', incident_end_time = $1 where id = $2 returning *;
