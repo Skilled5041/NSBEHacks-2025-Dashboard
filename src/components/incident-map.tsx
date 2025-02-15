@@ -10,7 +10,8 @@ export function IncidentMap(props: { lat: any, lng: any, incident: GetAllInciden
             <CardTitle>Incident Location</CardTitle>
         </CardHeader>
         <CardContent className="h-[400px]">
-            <MapContainer center={[props.lat, props.lng]} zoom={13} style={{ height: "100%", width: "100%" }}>
+            {/*@ts-ignore*/}
+            <MapContainer center={[props.lat, props.lng]} zoom={16} style={{ height: "100%", width: "100%" }}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />

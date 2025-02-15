@@ -31,6 +31,8 @@ export async function IncidentInfo(props: { incidentId: string }) {
         return <div>Incident not found</div>;
     }
 
+    const [lat, lng] = incident.gpsCoordinates.split(" ").map(parseFloat);
+
     return <div className="grid gap-6 md:grid-cols-2">
         <Card>
             <CardHeader>
@@ -64,6 +66,6 @@ export async function IncidentInfo(props: { incidentId: string }) {
                 </div>
             </CardContent>
         </Card>
-        <IncidentMap lat={10} lng={10} incident={incident}/>
+        <IncidentMap lat={lat} lng={lng} incident={incident}/>
     </div>;
 }
