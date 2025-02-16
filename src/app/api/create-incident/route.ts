@@ -1,5 +1,6 @@
 import { db } from "@/lib/database";
 import { createIncident, createIncidentContact } from "@/lib/sqlc/incidents_sql";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     const body = await request.json();
@@ -20,5 +21,5 @@ export async function POST(request: Request) {
         });
     }
 
-    return Response.json(incident);
+    return NextResponse.json(incident);
 }

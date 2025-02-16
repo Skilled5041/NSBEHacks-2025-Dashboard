@@ -17,10 +17,15 @@ select count(*) from incidents where status = 'pending';
 select * from incidents where id = $1;
 
 -- name: CreateIncident :one
-insert into incidents (incident_name, victim_name, gps_coordinates, incident_time, status) values ($1, $2, $3, $4, $5) returning *;
+insert into incidents (incident_name, victim_name, gps_coordinates, incident_time, status)
+values ($1, $2, $3, $4, $5)
+returning *;
 
 -- name: ResolveIncident :one
-update incidents set status = 'resolved', incident_end_time = $1 where id = $2 returning *;
+update incidents
+set status = 'resolved', incident_end_time = $1
+where id = $2
+returning *;
 
 -- name: GetNewIncidents :one
 select * from incidents where incident_time > $1;
@@ -32,12 +37,16 @@ select * from incidents where status != 'resolved';
 update incidents set status = $1 where id = $2 returning *;
 
 -- name: AddIncidentLocation :one
-insert into incident_locations (incident_id, gps_coordinates, location_time) values ($1, $2, $3) returning *;
+insert into incident_locations (incident_id, gps_coordinates, location_time)
+values ($1, $2, $3)
+returning *;
 
 -- name: CreateIncidentContact :one
-insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email) values ($1, $2, $3, $4) returning *;
+insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email)
+values ($1, $2, $3, $4)
+returning *;
 
 -- name: AddIncidentAudio :one
 insert into audio (incident_id, audio_url, audio_timestamp)
-values ($1, $2, $3) 
+values ($1, $2, $3)
 returning id, incident_id, audio_url, audio_timestamp;

@@ -132,7 +132,9 @@ export async function getAllIncidentById(sql: Sql, args: GetAllIncidentByIdArgs)
 }
 
 export const createIncidentQuery = `-- name: CreateIncident :one
-insert into incidents (incident_name, victim_name, gps_coordinates, incident_time, status) values ($1, $2, $3, $4, $5) returning id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status`;
+insert into incidents (incident_name, victim_name, gps_coordinates, incident_time, status)
+values ($1, $2, $3, $4, $5)
+returning id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status`;
 
 export interface CreateIncidentArgs {
     incidentName: string;
@@ -170,7 +172,10 @@ export async function createIncident(sql: Sql, args: CreateIncidentArgs): Promis
 }
 
 export const resolveIncidentQuery = `-- name: ResolveIncident :one
-update incidents set status = 'resolved', incident_end_time = $1 where id = $2 returning id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status`;
+update incidents
+set status = 'resolved', incident_end_time = $1
+where id = $2
+returning id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status`;
 
 export interface ResolveIncidentArgs {
     incidentEndTime: Date | null;
@@ -299,7 +304,9 @@ export async function updateIncidentStatus(sql: Sql, args: UpdateIncidentStatusA
 }
 
 export const addIncidentLocationQuery = `-- name: AddIncidentLocation :one
-insert into incident_locations (incident_id, gps_coordinates, location_time) values ($1, $2, $3) returning id, incident_id, gps_coordinates, location_time`;
+insert into incident_locations (incident_id, gps_coordinates, location_time)
+values ($1, $2, $3)
+returning id, incident_id, gps_coordinates, location_time`;
 
 export interface AddIncidentLocationArgs {
     incidentId: string | null;
@@ -329,7 +336,9 @@ export async function addIncidentLocation(sql: Sql, args: AddIncidentLocationArg
 }
 
 export const createIncidentContactQuery = `-- name: CreateIncidentContact :one
-insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email) values ($1, $2, $3, $4) returning id, incident_id, contact_name, contact_number, contact_email`;
+insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email)
+values ($1, $2, $3, $4)
+returning id, incident_id, contact_name, contact_number, contact_email`;
 
 export interface CreateIncidentContactArgs {
     incidentId: string | null;
@@ -363,7 +372,7 @@ export async function createIncidentContact(sql: Sql, args: CreateIncidentContac
 
 export const addIncidentAudioQuery = `-- name: AddIncidentAudio :one
 insert into audio (incident_id, audio_url, audio_timestamp)
-values ($1, $2, $3) 
+values ($1, $2, $3)
 returning id, incident_id, audio_url, audio_timestamp`;
 
 export interface AddIncidentAudioArgs {
