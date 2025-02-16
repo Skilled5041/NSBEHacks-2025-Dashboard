@@ -61,3 +61,9 @@ returning id, incident_id, audio_url, audio_timestamp;
 insert into analysis (incident_id, sentiment, threat_level, situation_summary, action_recommendation, detected_sounds)
 values ($1, $2, $3, $4, $5, $6)
 returning *;
+
+-- name: GetIncidentAudio :many
+select * from audio where incident_id = $1 order by audio_timestamp asc;
+
+-- name: GetIncidentAnalysis :many
+select * from analysis where incident_id = $1 order by analysis_timestamp desc;
