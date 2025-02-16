@@ -11,10 +11,5 @@ export async function POST(request: Request) {
         status: body.status
     });
 
-    return {
-        status: 200,
-        body: {
-            incident
-        }
-    };
+    return Response.json(incident);
 }

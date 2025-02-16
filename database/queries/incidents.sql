@@ -27,3 +27,6 @@ select * from incidents where incident_time > $1;
 
 -- name: GetAllUnresolvedIncidents :many
 select * from incidents where status != 'resolved';
+
+-- name: UpdateIncidentStatus :one
+update incidents set status = $1 where id = $2 returning *;

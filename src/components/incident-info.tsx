@@ -1,8 +1,8 @@
 import { getAllIncidentById } from "@/lib/sqlc/incidents_sql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { db } from "@/lib/database";
 import { IncidentMap } from "@/components/incident-map";
+import { StatusForm } from "@/components/status-form";
 
 export async function IncidentInfo(props: { incidentId: string }) {
     // ISO8601 and time
@@ -54,10 +54,7 @@ export async function IncidentInfo(props: { incidentId: string }) {
                     </div>
                     <div>
                         <dt className="font-semibold">Status</dt>
-                        <dd>
-                            <Badge
-                                className={`${getStatusColor(incident.status)}`}>{incident.status}</Badge>
-                        </dd>
+                        <StatusForm statusColor={getStatusColor(incident.status)} incident={incident}/>
                     </div>
                 </dl>
                 <div className="mt-4">

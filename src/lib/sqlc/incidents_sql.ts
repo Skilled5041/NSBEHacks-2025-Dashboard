@@ -263,3 +263,38 @@ export async function getAllUnresolvedIncidents(sql: Sql): Promise<GetAllUnresol
     }));
 }
 
+export const updateIncidentStatusQuery = `-- name: UpdateIncidentStatus :one
+update incidents set status = $1 where id = $2 returning id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status`;
+
+export interface UpdateIncidentStatusArgs {
+    status: string;
+    id: string;
+}
+
+export interface UpdateIncidentStatusRow {
+    id: string;
+    incidentName: string;
+    victimName: string;
+    gpsCoordinates: string;
+    incidentTime: Date;
+    incidentEndTime: Date | null;
+    status: string;
+}
+
+export async function updateIncidentStatus(sql: Sql, args: UpdateIncidentStatusArgs): Promise<UpdateIncidentStatusRow | null> {
+    const rows = await sql.unsafe(updateIncidentStatusQuery, [args.status, args.id]).values();
+    if (rows.length !== 1) {
+        return null;
+    }
+    const row = rows[0];
+    return {
+        id: row[0],
+        incidentName: row[1],
+        victimName: row[2],
+        gpsCoordinates: row[3],
+        incidentTime: row[4],
+        incidentEndTime: row[5],
+        status: row[6]
+    };
+}
+

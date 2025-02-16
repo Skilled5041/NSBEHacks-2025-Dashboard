@@ -8,10 +8,5 @@ export async function POST(request: Request) {
         incidentEndTime: body.incidentEndTime,
     });
 
-    return {
-        status: 200,
-        body: {
-            incident
-        }
-    };
+    return Response.json(incident);
 }

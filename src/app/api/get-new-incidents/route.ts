@@ -8,10 +8,5 @@ export async function GET(request: NextRequest) {
         incidentTime: lastPollTime
     });
 
-    return {
-        status: 200,
-        body: {
-            incidents
-        }
-    };
+    return Response.json(incidents);
 }
