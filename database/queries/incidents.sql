@@ -62,6 +62,9 @@ insert into analysis (incident_id, sentiment, threat_level, situation_summary, a
 values ($1, $2, $3, $4, $5, $6)
 returning *;
 
+-- name: GetAudioAnalysis :many
+select * from audio where incident_id = $1;
+
 -- name: GetIncidentAudio :many
 select * from audio where incident_id = $1 order by audio_timestamp asc;
 

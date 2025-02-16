@@ -487,6 +487,29 @@ export async function createAnalysis(sql: Sql, args: CreateAnalysisArgs): Promis
     };
 }
 
+export const getAudioAnalysisQuery = `-- name: GetAudioAnalysis :many
+select id, incident_id, audio_url, audio_timestamp from audio where incident_id = $1`;
+
+export interface GetAudioAnalysisArgs {
+    incidentId: string | null;
+}
+
+export interface GetAudioAnalysisRow {
+    id: string;
+    incidentId: string | null;
+    audioUrl: string;
+    audioTimestamp: Date;
+}
+
+export async function getAudioAnalysis(sql: Sql, args: GetAudioAnalysisArgs): Promise<GetAudioAnalysisRow[]> {
+    return (await sql.unsafe(getAudioAnalysisQuery, [args.incidentId]).values()).map(row => ({
+        id: row[0],
+        incidentId: row[1],
+        audioUrl: row[2],
+        audioTimestamp: row[3]
+    }));
+}
+
 export const getIncidentAudioQuery = `-- name: GetIncidentAudio :many
 select id, incident_id, audio_url, audio_timestamp from audio where incident_id = $1 order by audio_timestamp asc`;
 
