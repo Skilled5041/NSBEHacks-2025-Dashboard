@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         throw new Error("Failed to create incident");
     }
 
-    for (const contactInfo of body.emergencyContacts) {
+    for (const contactInfo of body.emergencyContacts ?? []) {
         await createIncidentContact(db, {
             contactName: contactInfo.fullName,
             incidentId: incident?.id!,

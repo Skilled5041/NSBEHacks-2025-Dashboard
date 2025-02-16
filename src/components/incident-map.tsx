@@ -2,14 +2,35 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
-import { GetAllIncidentByIdRow } from "@/lib/sqlc/incidents_sql";
+import { GetAllIncidentByIdRow, GetIncidentLocationsRow } from "@/lib/sqlc/incidents_sql";
+import { useEffect, useState } from "react";
 
-export function IncidentMap(props: { lat: any, lng: any, incident: GetAllIncidentByIdRow }) {
+export function IncidentMap(props: {
+    lat: any,
+    lng: any,
+    incident: GetAllIncidentByIdRow,
+    locations: GetIncidentLocationsRow[]
+}) {
 
-    const polyline = [
-        [props.lat, props.lng],
-        [props.lat + 0.001, props.lng + 0.001],
-    ];
+    const [polyline, setPolyline] = useState(props.locations.map(location => {
+        const [lat, lng] = location.gpsCoordinates.split(" ").map(parseFloat);
+        return [lat, lng];
+    }));
+    // Get current date utc
+    const [lastPollTime, setLastPollTime] = useState(props?.locations[props?.locations.length - 1]?.locationTime ?? new Date());
+
+    useEffect(() => {
+        setInterval(async () => {
+            const response = await fetch(`/api/get-new-incident-locations?lastPollTime=${lastPollTime}`);
+            const locations = await response.json();
+            setPolyline(polyline.concat(locations.map((location: any) => {
+                const [lat, lng] = location.gpsCoordinates.split(" ").map(parseFloat);
+                return [lat, lng];
+            })));
+            setLastPollTime(locations[locations.length - 1]?.locationTime ?? lastPollTime);
+            console.log(lastPollTime);
+        }, 2500);
+    }, []);
 
     return <Card>
         <CardHeader>

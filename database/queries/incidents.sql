@@ -41,6 +41,12 @@ insert into incident_locations (incident_id, gps_coordinates, location_time)
 values ($1, $2, $3)
 returning *;
 
+-- name: GetIncidentLocations :many
+select * from incident_locations where incident_id = $1;
+
+-- name: GetNewIncidentLocations :many
+select * from incident_locations where location_time > $1;
+
 -- name: CreateIncidentContact :one
 insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email)
 values ($1, $2, $3, $4)
@@ -50,3 +56,8 @@ returning *;
 insert into audio (incident_id, audio_url, audio_timestamp)
 values ($1, $2, $3)
 returning id, incident_id, audio_url, audio_timestamp;
+
+-- name: CreateAnalysis :one
+insert into analysis (incident_id, sentiment, threat_level, situation_summary, action_recommendation, detected_sounds)
+values ($1, $2, $3, $4, $5, $6)
+returning *;

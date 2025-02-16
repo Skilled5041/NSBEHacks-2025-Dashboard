@@ -1,4 +1,4 @@
-import { getAllIncidentById } from "@/lib/sqlc/incidents_sql";
+import { getAllIncidentById, getIncidentLocations } from "@/lib/sqlc/incidents_sql";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/database";
 import { IncidentMap } from "@/components/incident-map";
@@ -33,6 +33,10 @@ export async function IncidentInfo(props: { incidentId: string }) {
 
     const [lat, lng] = incident.gpsCoordinates.split(" ").map(parseFloat);
 
+    const locations = await getIncidentLocations(db, {
+        incidentId: props.incidentId
+    });
+
     return <div className="grid gap-6 md:grid-cols-2">
         <Card>
             <CardHeader>
@@ -63,6 +67,6 @@ export async function IncidentInfo(props: { incidentId: string }) {
                 </div>
             </CardContent>
         </Card>
-        <IncidentMap lat={lat} lng={lng} incident={incident}/>
+        <IncidentMap lat={lat} lng={lng} incident={incident} locations={locations}/>
     </div>;
 }

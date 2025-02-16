@@ -335,6 +335,52 @@ export async function addIncidentLocation(sql: Sql, args: AddIncidentLocationArg
     };
 }
 
+export const getIncidentLocationsQuery = `-- name: GetIncidentLocations :many
+select id, incident_id, gps_coordinates, location_time from incident_locations where incident_id = $1`;
+
+export interface GetIncidentLocationsArgs {
+    incidentId: string | null;
+}
+
+export interface GetIncidentLocationsRow {
+    id: string;
+    incidentId: string | null;
+    gpsCoordinates: string;
+    locationTime: Date;
+}
+
+export async function getIncidentLocations(sql: Sql, args: GetIncidentLocationsArgs): Promise<GetIncidentLocationsRow[]> {
+    return (await sql.unsafe(getIncidentLocationsQuery, [args.incidentId]).values()).map(row => ({
+        id: row[0],
+        incidentId: row[1],
+        gpsCoordinates: row[2],
+        locationTime: row[3]
+    }));
+}
+
+export const getNewIncidentLocationsQuery = `-- name: GetNewIncidentLocations :many
+select id, incident_id, gps_coordinates, location_time from incident_locations where location_time > $1`;
+
+export interface GetNewIncidentLocationsArgs {
+    locationTime: Date;
+}
+
+export interface GetNewIncidentLocationsRow {
+    id: string;
+    incidentId: string | null;
+    gpsCoordinates: string;
+    locationTime: Date;
+}
+
+export async function getNewIncidentLocations(sql: Sql, args: GetNewIncidentLocationsArgs): Promise<GetNewIncidentLocationsRow[]> {
+    return (await sql.unsafe(getNewIncidentLocationsQuery, [args.locationTime]).values()).map(row => ({
+        id: row[0],
+        incidentId: row[1],
+        gpsCoordinates: row[2],
+        locationTime: row[3]
+    }));
+}
+
 export const createIncidentContactQuery = `-- name: CreateIncidentContact :one
 insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email)
 values ($1, $2, $3, $4)
@@ -399,6 +445,49 @@ export async function addIncidentAudio(sql: Sql, args: AddIncidentAudioArgs): Pr
         incidentId: row[1],
         audioUrl: row[2],
         audioTimestamp: row[3]
+    };
+}
+
+export const createAnalysisQuery = `-- name: CreateAnalysis :one
+insert into analysis (incident_id, sentiment, threat_level, situation_summary, action_recommendation, detected_sounds)
+values ($1, $2, $3, $4, $5, $6)
+returning id, incident_id, sentiment, threat_level, situation_summary, action_recommendation, detected_sounds, analysis_timestamp`;
+
+export interface CreateAnalysisArgs {
+    incidentId: string | null;
+    sentiment: string | null;
+    threatLevel: string | null;
+    situationSummary: string | null;
+    actionRecommendation: string[] | null;
+    detectedSounds: string[] | null;
+}
+
+export interface CreateAnalysisRow {
+    id: string;
+    incidentId: string | null;
+    sentiment: string | null;
+    threatLevel: string | null;
+    situationSummary: string | null;
+    actionRecommendation: string[] | null;
+    detectedSounds: string[] | null;
+    analysisTimestamp: Date;
+}
+
+export async function createAnalysis(sql: Sql, args: CreateAnalysisArgs): Promise<CreateAnalysisRow | null> {
+    const rows = await sql.unsafe(createAnalysisQuery, [args.incidentId, args.sentiment, args.threatLevel, args.situationSummary, args.actionRecommendation, args.detectedSounds]).values();
+    if (rows.length !== 1) {
+        return null;
+    }
+    const row = rows[0];
+    return {
+        id: row[0],
+        incidentId: row[1],
+        sentiment: row[2],
+        threatLevel: row[3],
+        situationSummary: row[4],
+        actionRecommendation: row[5],
+        detectedSounds: row[6],
+        analysisTimestamp: row[7]
     };
 }
 

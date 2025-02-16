@@ -28,4 +28,15 @@ create table if not exists public.audio (
     incident_id uuid references incidents(id) on delete cascade,
     audio_url text not null,
     audio_timestamp timestamptz not null default now()
-)
+);
+
+create table if not exists public.analysis (
+    id uuid primary key default uuid_generate_v4(),
+    incident_id uuid references incidents(id) on delete cascade,
+    sentiment text,
+    threat_level text,
+    situation_summary text,
+    action_recommendation text[],
+    detected_sounds text[],
+    analysis_timestamp timestamptz not null default now()
+);
