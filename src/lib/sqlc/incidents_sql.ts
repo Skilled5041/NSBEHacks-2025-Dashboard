@@ -210,11 +210,7 @@ export async function resolveIncident(sql: Sql, args: ResolveIncidentArgs): Prom
 }
 
 export const getNewIncidentsQuery = `-- name: GetNewIncidents :one
-select id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status from incidents where incident_time > $1`;
-
-export interface GetNewIncidentsArgs {
-    incidentTime: Date;
-}
+select id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status from incidents`;
 
 export interface GetNewIncidentsRow {
     id: string;
@@ -226,8 +222,8 @@ export interface GetNewIncidentsRow {
     status: string;
 }
 
-export async function getNewIncidents(sql: Sql, args: GetNewIncidentsArgs): Promise<GetNewIncidentsRow | null> {
-    const rows = await sql.unsafe(getNewIncidentsQuery, [args.incidentTime]).values();
+export async function getNewIncidents(sql: Sql): Promise<GetNewIncidentsRow | null> {
+    const rows = await sql.unsafe(getNewIncidentsQuery, []).values();
     if (rows.length !== 1) {
         return null;
     }
@@ -489,5 +485,59 @@ export async function createAnalysis(sql: Sql, args: CreateAnalysisArgs): Promis
         detectedSounds: row[6],
         analysisTimestamp: row[7]
     };
+}
+
+export const getIncidentAudioQuery = `-- name: GetIncidentAudio :many
+select id, incident_id, audio_url, audio_timestamp from audio where incident_id = $1 order by audio_timestamp asc`;
+
+export interface GetIncidentAudioArgs {
+    incidentId: string | null;
+}
+
+export interface GetIncidentAudioRow {
+    id: string;
+    incidentId: string | null;
+    audioUrl: string;
+    audioTimestamp: Date;
+}
+
+export async function getIncidentAudio(sql: Sql, args: GetIncidentAudioArgs): Promise<GetIncidentAudioRow[]> {
+    return (await sql.unsafe(getIncidentAudioQuery, [args.incidentId]).values()).map(row => ({
+        id: row[0],
+        incidentId: row[1],
+        audioUrl: row[2],
+        audioTimestamp: row[3]
+    }));
+}
+
+export const getIncidentAnalysisQuery = `-- name: GetIncidentAnalysis :many
+select id, incident_id, sentiment, threat_level, situation_summary, action_recommendation, detected_sounds, analysis_timestamp from analysis where incident_id = $1 order by analysis_timestamp desc`;
+
+export interface GetIncidentAnalysisArgs {
+    incidentId: string | null;
+}
+
+export interface GetIncidentAnalysisRow {
+    id: string;
+    incidentId: string | null;
+    sentiment: string | null;
+    threatLevel: string | null;
+    situationSummary: string | null;
+    actionRecommendation: string[] | null;
+    detectedSounds: string[] | null;
+    analysisTimestamp: Date;
+}
+
+export async function getIncidentAnalysis(sql: Sql, args: GetIncidentAnalysisArgs): Promise<GetIncidentAnalysisRow[]> {
+    return (await sql.unsafe(getIncidentAnalysisQuery, [args.incidentId]).values()).map(row => ({
+        id: row[0],
+        incidentId: row[1],
+        sentiment: row[2],
+        threatLevel: row[3],
+        situationSummary: row[4],
+        actionRecommendation: row[5],
+        detectedSounds: row[6],
+        analysisTimestamp: row[7]
+    }));
 }
 

@@ -1,11 +1,13 @@
+"use client";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { getAllIncidents } from "@/lib/sqlc/incidents_sql";
-import { db } from "@/lib/database";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { GetNewIncidentsRow } from "@/lib/sqlc/incidents_sql";
 
-export default async function IncidentsTable() {
-    const incidents = await getAllIncidents(db);
+export default function IncidentsTable() {
+    let [incidents, setIncidents] = useState<GetNewIncidentsRow[]>([]);
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
@@ -25,6 +27,31 @@ export default async function IncidentsTable() {
         return date.toISOString().split("T")[0] + " " + date.toISOString().split("T")[1].split(".")[0];
     };
 
+    const [lastPollTime, setLastPollTime] = useState(incidents?.[incidents.length - 1]?.incidentTime ?? new Date());
+    useEffect(() => {
+        const getIncidents = async () => {
+            const response = await fetch("/api/get-new-incidents?lastPollTime=" + new Date(0));
+            const newIncidents = await response.json();
+            newIncidents.map((incident: GetNewIncidentsRow) => {
+                incident.incidentTime = new Date(incident.incidentTime);
+            });
+            setIncidents(newIncidents);
+        };
+        getIncidents();
+
+        setInterval(async () => {
+            const response = await fetch(`/api/get-new-incidents?lastPollTime=${lastPollTime}`);
+            const newIncidents = await response.json();
+            if (newIncidents.length > 0) {
+                newIncidents.map((incident: GetNewIncidentsRow) => {
+                    incident.incidentTime = new Date(incident.incidentTime);
+                });
+                setIncidents(newIncidents);
+            }
+            setLastPollTime(newIncidents[newIncidents.length - 1]?.incidentTime ?? lastPollTime);
+        }, 2500);
+    }, []);
+
     return (
         <Table>
             <TableHeader>
@@ -38,7 +65,7 @@ export default async function IncidentsTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {incidents.sort((a, b) => b.incidentTime.getTime() - a.incidentTime.getTime()).map((incident) => (
+                {incidents?.sort((a, b) => b.incidentTime.getTime() - a.incidentTime.getTime()).map((incident) => (
                     <TableRow key={incident.id}>
                         <TableCell>
                             <Link className="text-blue-500" href={"/incident?id=" + incident.id}>{incident.id}</Link>

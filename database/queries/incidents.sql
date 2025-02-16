@@ -28,7 +28,7 @@ where id = $2
 returning *;
 
 -- name: GetNewIncidents :one
-select * from incidents where incident_time > $1;
+select * from incidents;
 
 -- name: GetAllUnresolvedIncidents :many
 select * from incidents where status != 'resolved';
