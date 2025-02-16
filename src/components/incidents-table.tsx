@@ -38,7 +38,7 @@ export default async function IncidentsTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {incidents.map((incident) => (
+                {incidents.sort((a, b) => b.incidentTime.getTime() - a.incidentTime.getTime()).map((incident) => (
                     <TableRow key={incident.id}>
                         <TableCell>
                             <Link className="text-blue-500" href={"/incident?id=" + incident.id}>{incident.id}</Link>
