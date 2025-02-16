@@ -1,3 +1,5 @@
+// TODO SHOW SEVERITY ANALYSIS IN PREVIEWS
+
 import { Search } from "lucide-react";
 import IncidentsTable from "@/components/incidents-table";
 import { Input } from "@/components/ui/input";

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createId } from "@paralleldrive/cuid2";
 import { db } from "@/lib/database";
 import { addIncidentAudio } from "@/lib/sqlc/incidents_sql";
 
@@ -12,49 +11,12 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const audioFile = formData.get("audio") as File;
-    const incidentId = formData.get("incidentId") as string;
-
-    if (!audioFile || !incidentId) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    // Generate a unique filename
-    const fileExtension = audioFile.name.split(".").pop();
-    const fileName = `${createId()}.${fileExtension}`;
-    const filePath = `incident-audio/${fileName}`;
-
-    // Upload to Supabase Storage using REST API
-    const uploadResponse = await fetch(
-      `${SUPABASE_URL}/storage/v1/object/public/incidents/${filePath}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
-          "Content-Type": audioFile.type,
-        },
-        body: await audioFile.arrayBuffer(),
-      }
-    );
-
-    if (!uploadResponse.ok) {
-      return NextResponse.json(
-        { error: "Failed to upload audio file" },
-        { status: 500 }
-      );
-    }
-
-    // Get the public URL for the uploaded file
-    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/incidents/${filePath}`;
-
+    const data = await request.json();
+    const { incidentId, audioUrl } = data;
     // Save to database using sqlc
     const audio = await addIncidentAudio(db, {
       incidentId,
-      audioUrl: publicUrl,
+      audioUrl,
       audioTimestamp: new Date(),
     });
 
