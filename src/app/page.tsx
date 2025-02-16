@@ -9,6 +9,9 @@ import {
 } from "@/lib/sqlc/incidents_sql";
 import { db } from "@/lib/database";
 
+// No cache
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
     const totalIncidentsCount = await getTotalIncidentsCount(db);
     const resolvedIncidentsCount = await getResolvedIncidentsCount(db);
