@@ -26,7 +26,9 @@ export async function POST(request: Request) {
         });
     }
 
-    await notifyEmergencyContacts(body.emergencyContacts, body.victimName, body.latitude || 43.6594719, body.longitude || -79.3978135);
+    const [lat, lng] = body.gpsCoordinates.split(" ").map(parseFloat);
+
+    await notifyEmergencyContacts(body.emergencyContacts, body.victimName, lat || 43.6594719, lng || -79.3978135);
 
     return NextResponse.json(incident);
 }
