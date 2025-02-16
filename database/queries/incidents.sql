@@ -24,3 +24,6 @@ update incidents set status = 'resolved', incident_end_time = $1 where id = $2 r
 
 -- name: GetNewIncidents :one
 select * from incidents where incident_time > $1;
+
+-- name: GetAllUnresolvedIncidents :many
+select * from incidents where status != 'resolved';

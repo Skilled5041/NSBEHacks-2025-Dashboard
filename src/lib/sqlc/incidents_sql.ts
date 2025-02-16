@@ -238,3 +238,28 @@ export async function getNewIncidents(sql: Sql, args: GetNewIncidentsArgs): Prom
     };
 }
 
+export const getAllUnresolvedIncidentsQuery = `-- name: GetAllUnresolvedIncidents :many
+select id, incident_name, victim_name, gps_coordinates, incident_time, incident_end_time, status from incidents where status != 'resolved'`;
+
+export interface GetAllUnresolvedIncidentsRow {
+    id: string;
+    incidentName: string;
+    victimName: string;
+    gpsCoordinates: string;
+    incidentTime: Date;
+    incidentEndTime: Date | null;
+    status: string;
+}
+
+export async function getAllUnresolvedIncidents(sql: Sql): Promise<GetAllUnresolvedIncidentsRow[]> {
+    return (await sql.unsafe(getAllUnresolvedIncidentsQuery, []).values()).map(row => ({
+        id: row[0],
+        incidentName: row[1],
+        victimName: row[2],
+        gpsCoordinates: row[3],
+        incidentTime: row[4],
+        incidentEndTime: row[5],
+        status: row[6]
+    }));
+}
+

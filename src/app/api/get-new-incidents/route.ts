@@ -1,10 +1,11 @@
 import { db } from "@/lib/database";
 import { getNewIncidents } from "@/lib/sqlc/incidents_sql";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
-    const body = await request.json();
+export async function GET(request: NextRequest) {
+    const lastPollTime = new Date(request.nextUrl.searchParams.get("lastPollTime") || new Date().toISOString());
     const incidents = await getNewIncidents(db, {
-        incidentTime: body.lastPollTime
+        incidentTime: lastPollTime
     });
 
     return {
