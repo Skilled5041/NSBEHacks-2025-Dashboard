@@ -1,10 +1,16 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 import { GetAllIncidentByIdRow } from "@/lib/sqlc/incidents_sql";
 
 export function IncidentMap(props: { lat: any, lng: any, incident: GetAllIncidentByIdRow }) {
+
+    const polyline = [
+        [props.lat, props.lng],
+        [props.lat + 0.001, props.lng + 0.001],
+    ];
+
     return <Card>
         <CardHeader>
             <CardTitle>Incident Location</CardTitle>
@@ -22,6 +28,7 @@ export function IncidentMap(props: { lat: any, lng: any, incident: GetAllInciden
                         {props.incident.gpsCoordinates}
                     </Popup>
                 </Marker>
+                <Polyline pathOptions={{ color: "red" }} positions={polyline}/>
             </MapContainer>
         </CardContent>
     </Card>;
