@@ -12,6 +12,10 @@ export async function POST(request: Request) {
         status: body.status
     });
 
+    if (incident === null) {
+        throw new Error("Failed to create incident");
+    }
+
     for (const contactInfo of body.emergencyContacts) {
         await createIncidentContact(db, {
             contactName: contactInfo.fullName,
@@ -20,7 +24,6 @@ export async function POST(request: Request) {
             contactEmail: contactInfo.email
         });
     }
-    console.log(incident);
 
     return NextResponse.json(incident);
 }
