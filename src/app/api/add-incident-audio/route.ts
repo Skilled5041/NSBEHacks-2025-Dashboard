@@ -10,6 +10,12 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   throw new Error("Missing Supabase environment variables");
 }
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
