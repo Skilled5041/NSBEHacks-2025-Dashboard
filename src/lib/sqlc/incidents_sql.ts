@@ -328,3 +328,36 @@ export async function addIncidentLocation(sql: Sql, args: AddIncidentLocationArg
     };
 }
 
+export const createIncidentContactQuery = `-- name: CreateIncidentContact :one
+insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email) values ($1, $2, $3, $4) returning id, incident_id, contact_name, contact_number, contact_email`;
+
+export interface CreateIncidentContactArgs {
+    incidentId: string | null;
+    contactName: string | null;
+    contactNumber: string | null;
+    contactEmail: string | null;
+}
+
+export interface CreateIncidentContactRow {
+    id: string;
+    incidentId: string | null;
+    contactName: string | null;
+    contactNumber: string | null;
+    contactEmail: string | null;
+}
+
+export async function createIncidentContact(sql: Sql, args: CreateIncidentContactArgs): Promise<CreateIncidentContactRow | null> {
+    const rows = await sql.unsafe(createIncidentContactQuery, [args.incidentId, args.contactName, args.contactNumber, args.contactEmail]).values();
+    if (rows.length !== 1) {
+        return null;
+    }
+    const row = rows[0];
+    return {
+        id: row[0],
+        incidentId: row[1],
+        contactName: row[2],
+        contactNumber: row[3],
+        contactEmail: row[4]
+    };
+}
+

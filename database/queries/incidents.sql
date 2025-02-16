@@ -33,3 +33,6 @@ update incidents set status = $1 where id = $2 returning *;
 
 -- name: AddIncidentLocation :one
 insert into incident_locations (incident_id, gps_coordinates, location_time) values ($1, $2, $3) returning *;
+
+-- name: CreateIncidentContact :one
+insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email) values ($1, $2, $3, $4) returning *;

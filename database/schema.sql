@@ -14,3 +14,11 @@ create table if not exists public.incident_locations (
     gps_coordinates text not null,
     location_time timestamptz not null default now()
 );
+
+create table if not exists public.emergency_contacts (
+    id uuid primary key default uuid_generate_v4(),
+    incident_id uuid references incidents(id) on delete cascade,
+    contact_name text,
+    contact_number text,
+    contact_email text
+);
