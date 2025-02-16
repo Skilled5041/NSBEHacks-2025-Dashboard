@@ -361,3 +361,35 @@ export async function createIncidentContact(sql: Sql, args: CreateIncidentContac
     };
 }
 
+export const addIncidentAudioQuery = `-- name: AddIncidentAudio :one
+insert into audio (incident_id, audio_url, audio_timestamp)
+values ($1, $2, $3) 
+returning id, incident_id, audio_url, audio_timestamp`;
+
+export interface AddIncidentAudioArgs {
+    incidentId: string | null;
+    audioUrl: string;
+    audioTimestamp: Date;
+}
+
+export interface AddIncidentAudioRow {
+    id: string;
+    incidentId: string | null;
+    audioUrl: string;
+    audioTimestamp: Date;
+}
+
+export async function addIncidentAudio(sql: Sql, args: AddIncidentAudioArgs): Promise<AddIncidentAudioRow | null> {
+    const rows = await sql.unsafe(addIncidentAudioQuery, [args.incidentId, args.audioUrl, args.audioTimestamp]).values();
+    if (rows.length !== 1) {
+        return null;
+    }
+    const row = rows[0];
+    return {
+        id: row[0],
+        incidentId: row[1],
+        audioUrl: row[2],
+        audioTimestamp: row[3]
+    };
+}
+

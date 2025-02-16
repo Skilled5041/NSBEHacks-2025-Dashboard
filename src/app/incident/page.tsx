@@ -17,8 +17,8 @@ export default async function IncidentDetail(params: Props) {
     return (
         <div className="container mx-auto p-6">
             <Link href="/" className="inline-flex items-center mb-4">
-                <Button variant="outline" size="sm">
-                    <ArrowLeft className="mr-2 h-4 w-4"/> Back to Dashboard
+                <Button variant="outline" size="lg">
+                    <ArrowLeft className="mr-2h-4 w-4"/> Back to Dashboard
                 </Button>
             </Link>
             <IncidentInfo incidentId={id}/>

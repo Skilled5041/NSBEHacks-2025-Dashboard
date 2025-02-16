@@ -22,3 +22,10 @@ create table if not exists public.emergency_contacts (
     contact_number text,
     contact_email text
 );
+
+create table if not exists public.audio (
+    id uuid primary key default uuid_generate_v4(),
+    incident_id uuid references incidents(id) on delete cascade,
+    audio_url text not null,
+    audio_timestamp timestamptz not null default now()
+)
