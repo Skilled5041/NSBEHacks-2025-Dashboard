@@ -36,3 +36,8 @@ insert into incident_locations (incident_id, gps_coordinates, location_time) val
 
 -- name: CreateIncidentContact :one
 insert into emergency_contacts (incident_id, contact_name, contact_number, contact_email) values ($1, $2, $3, $4) returning *;
+
+-- name: AddIncidentAudio :one
+insert into incident_audio (incident_id, audio_url, audio_timestamp) 
+values ($1, $2, $3) 
+returning id, incident_id, audio_url, audio_timestamp;
