@@ -49,6 +49,13 @@ export function IncidentMap(props: {
                         {props.incident.gpsCoordinates}
                     </Popup>
                 </Marker>
+                {polyline.length > 0 &&
+                    <Marker position={polyline[polyline.length - 1]}>
+                      <Popup>
+                        Last position
+                      </Popup>
+                    </Marker>
+                }
                 <Polyline pathOptions={{ color: "red" }} positions={polyline}/>
             </MapContainer>
         </CardContent>
