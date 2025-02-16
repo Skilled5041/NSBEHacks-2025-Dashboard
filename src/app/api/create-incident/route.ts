@@ -15,11 +15,12 @@ export async function POST(request: Request) {
     for (const contactInfo of body.emergencyContacts) {
         await createIncidentContact(db, {
             contactName: contactInfo.fullName,
-            incidentId: body.incidentId,
+            incidentId: incident?.id!,
             contactNumber: contactInfo.phoneNumber,
             contactEmail: contactInfo.email
         });
     }
+    console.log(incident);
 
     return NextResponse.json(incident);
 }
