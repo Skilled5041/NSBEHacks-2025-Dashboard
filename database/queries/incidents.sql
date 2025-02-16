@@ -21,3 +21,6 @@ insert into incidents (incident_name, victim_name, gps_coordinates, incident_tim
 
 -- name: ResolveIncident :one
 update incidents set status = 'resolved', incident_end_time = $1 where id = $2 returning *;
+
+-- name: GetNewIncidents :one
+select * from incidents where incident_time > $1;
