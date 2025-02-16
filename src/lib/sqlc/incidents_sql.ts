@@ -298,3 +298,33 @@ export async function updateIncidentStatus(sql: Sql, args: UpdateIncidentStatusA
     };
 }
 
+export const addIncidentLocationQuery = `-- name: AddIncidentLocation :one
+insert into incident_locations (incident_id, gps_coordinates, location_time) values ($1, $2, $3) returning id, incident_id, gps_coordinates, location_time`;
+
+export interface AddIncidentLocationArgs {
+    incidentId: string | null;
+    gpsCoordinates: string;
+    locationTime: Date;
+}
+
+export interface AddIncidentLocationRow {
+    id: string;
+    incidentId: string | null;
+    gpsCoordinates: string;
+    locationTime: Date;
+}
+
+export async function addIncidentLocation(sql: Sql, args: AddIncidentLocationArgs): Promise<AddIncidentLocationRow | null> {
+    const rows = await sql.unsafe(addIncidentLocationQuery, [args.incidentId, args.gpsCoordinates, args.locationTime]).values();
+    if (rows.length !== 1) {
+        return null;
+    }
+    const row = rows[0];
+    return {
+        id: row[0],
+        incidentId: row[1],
+        gpsCoordinates: row[2],
+        locationTime: row[3]
+    };
+}
+

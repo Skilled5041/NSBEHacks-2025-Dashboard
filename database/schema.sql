@@ -7,3 +7,10 @@ create table if not exists public.incidents (
     incident_end_time timestamptz,
     status text not null check (status in ('resolved', 'ongoing', 'pending'))
 );
+
+create table if not exists public.incident_locations (
+    id uuid primary key default uuid_generate_v4(),
+    incident_id uuid references incidents(id) on delete cascade,
+    gps_coordinates text not null,
+    location_time timestamptz not null default now()
+);
