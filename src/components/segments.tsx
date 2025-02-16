@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GetIncidentAnalysisRow } from "@/lib/sqlc/incidents_sql";
 import { ChevronLeft, ChevronRight, Volume2 } from "lucide-react";
 import { useState } from "react";
 // Add this type for comb
@@ -22,14 +23,14 @@ export type AudioSegment = {
 const formatDate = (date: Date) => {
     return date.toISOString().split("T")[0] + " " + date.toISOString().split("T")[1].split(".")[0];
 };
-export function Segments(props: { audioSegments: AudioSegment[] }) {
+export function Segments(props: { analyses: GetIncidentAnalysisRow[] }) {
     const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
 
-    const audioSegments = props.audioSegments;
+    const analyses = props.analyses;
 
     const nextSegment = () => {
         setCurrentSegmentIndex(i =>
-            i < audioSegments.length - 1 ? i + 1 : i
+            i < analyses.length - 1 ? i + 1 : i
         );
     };
 
@@ -38,7 +39,7 @@ export function Segments(props: { audioSegments: AudioSegment[] }) {
     };
     return <>
         {/* Audio Analysis Section */}
-        {audioSegments.length > 0 && (
+        {analyses.length > 0 && (
             <div className="md:col-span-2">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
@@ -52,11 +53,11 @@ export function Segments(props: { audioSegments: AudioSegment[] }) {
                                 <ChevronLeft className="w-6 h-6"/>
                             </button>
                             <span className="text-sm text-gray-500">
-                                {currentSegmentIndex + 1} of {audioSegments.length}
+                                {currentSegmentIndex + 1} of {analyses.length}
                             </span>
                             <button
                                 onClick={nextSegment}
-                                disabled={currentSegmentIndex === audioSegments.length - 1}
+                                disabled={currentSegmentIndex === analyses.length - 1}
                                 className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50"
                             >
                                 <ChevronRight className="w-6 h-6"/>
@@ -70,35 +71,35 @@ export function Segments(props: { audioSegments: AudioSegment[] }) {
                                 <div className="flex items-center gap-2">
                                     <Volume2 className="w-5 h-5 text-gray-500"/>
                                     <span className="text-sm text-gray-500">
-                                        {formatDate(audioSegments[currentSegmentIndex].timestamp)}
+                                        {formatDate(analyses[currentSegmentIndex].analysisTimestamp)}
                                     </span>
                                 </div>
                                 <audio
                                     controls
-                                    src={audioSegments[currentSegmentIndex].audioUrl}
+                                    src={'N/A'}
                                     className="w-full"
                                 />
                             </div>
 
                             {/* Analysis Info */}
-                            {audioSegments[currentSegmentIndex].analysis && (
+                            {analyses[currentSegmentIndex] && (
                                 <div className="space-y-4">
                                     <div>
                                         <h3 className="font-medium text-sm text-gray-500">Sentiment</h3>
-                                        <p className="text-lg">{audioSegments[currentSegmentIndex].analysis.sentiment}</p>
+                                        <p className="text-lg">{analyses[currentSegmentIndex].sentiment}</p>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-sm text-gray-500">Threat Level</h3>
-                                        <p className="text-lg">{audioSegments[currentSegmentIndex].analysis.threatLevel}</p>
+                                        <p className="text-lg">{analyses[currentSegmentIndex].threatLevel}</p>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-sm text-gray-500">Situation Summary</h3>
-                                        <p className="text-lg">{audioSegments[currentSegmentIndex].analysis.situationSummary}</p>
+                                        <p className="text-lg">{analyses[currentSegmentIndex].situationSummary}</p>
                                     </div>
                                     <div>
                                         <h3 className="font-medium text-sm text-gray-500">Detected Sounds</h3>
                                         <div className="flex flex-wrap gap-2 mt-1">
-                                            {audioSegments[currentSegmentIndex].analysis.detectedSounds.map((sound, i) => (
+                                            {analyses[currentSegmentIndex].detectedSounds?.map((sound, i) => (
                                                 <span key={i} className="px-2 py-1 bg-gray-100 rounded-full text-sm">
                                                     {sound}
                                                 </span>
@@ -108,7 +109,7 @@ export function Segments(props: { audioSegments: AudioSegment[] }) {
                                     <div>
                                         <h3 className="font-medium text-sm text-gray-500">Recommended Actions</h3>
                                         <ul className="list-disc list-inside mt-1">
-                                            {audioSegments[currentSegmentIndex].analysis.actionRecommendation.map((action, i) => (
+                                            {analyses[currentSegmentIndex].actionRecommendation?.map((action, i) => (
                                                 <li key={i} className="text-lg">{action}</li>
                                             ))}
                                         </ul>

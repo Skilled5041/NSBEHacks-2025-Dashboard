@@ -54,13 +54,13 @@ export async function IncidentInfo(props: { incidentId: string }) {
 
     // Combine audio and analysis data
     // @ts-ignore
-    const audioSegments: AudioSegment[] = audioRecordings.map(audio => ({
-        audioUrl: audio.audioUrl,
-        timestamp: audio.audioTimestamp,
-        analysis: analyses.find(a =>
-            Math.abs(a.analysisTimestamp.getTime() - audio.audioTimestamp.getTime()) < 5000
-        ) || {}
-    }));
+    // const audioSegments: AudioSegment[] = audioRecordings.map(audio => ({
+    //     audioUrl: audio.audioUrl,
+    //     timestamp: audio.audioTimestamp,
+    //     analysis: analyses.find(a =>
+    //         Math.abs(a.analysisTimestamp.getTime() - audio.audioTimestamp.getTime()) < 5000
+    //     ) || {}
+    // }));
 
 
 
@@ -96,6 +96,6 @@ export async function IncidentInfo(props: { incidentId: string }) {
         </Card>
         <IncidentMap lat={lat} lng={lng} incident={incident} locations={locations}/>
 
-        <Segments audioSegments={audioSegments}/>
+        <Segments analyses={analyses}/>
     </div>;
 }
