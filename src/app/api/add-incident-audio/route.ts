@@ -22,13 +22,14 @@ export async function POST(request: NextRequest) {
     const audioFile = formData.get("audio") as File;
     const incidentId = formData.get("incidentId") as string;
 
+    console.log(1);
     if (!audioFile || !incidentId) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
-
+    console.log(2);
     // Generate a unique filename
     const fileExtension = audioFile.name.split(".").pop();
     const fileName = `${createId()}.${fileExtension}`;
@@ -46,8 +47,9 @@ export async function POST(request: NextRequest) {
         body: await audioFile.arrayBuffer(),
       }
     );
-
+    console.log(3);
     if (!uploadResponse.ok) {
+      console.log(4);
       return NextResponse.json(
         { error: "Failed to upload audio file" },
         { status: 500 }
@@ -56,20 +58,21 @@ export async function POST(request: NextRequest) {
 
     // Get the public URL for the uploaded file
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/incidents/${filePath}`;
-
+    console.log(5);
     // Save to database using sqlc
     const audio = await addIncidentAudio(db, {
       incidentId,
       audioUrl: publicUrl,
       audioTimestamp: new Date(),
     });
-
+    console.log(6);
     return NextResponse.json({
       success: true,
       audio,
     });
 
   } catch (error) {
+    console.log(7);
     console.error("Error uploading audio:", error);
     return NextResponse.json(
       { error: "Internal server error" },

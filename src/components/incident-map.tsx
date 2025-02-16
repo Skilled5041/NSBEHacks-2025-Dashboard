@@ -20,7 +20,7 @@ export function IncidentMap(props: {
     const [lastPollTime, setLastPollTime] = useState(props?.locations[props?.locations.length - 1]?.locationTime ?? new Date());
 
     useEffect(() => {
-        setInterval(async () => {
+        const intervalId = setInterval(async () => {
             const response = await fetch(`/api/get-new-incident-locations?lastPollTime=${lastPollTime}`);
             const locations = await response.json();
             setPolyline(polyline.concat(locations.map((location: any) => {
@@ -29,7 +29,9 @@ export function IncidentMap(props: {
             })));
             setLastPollTime(locations[locations.length - 1]?.locationTime ?? lastPollTime);
             console.log(lastPollTime);
-        }, 2500);
+        }, 3000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     return <Card>

@@ -39,7 +39,7 @@ export default function IncidentsTable() {
         };
         getIncidents();
 
-        setInterval(async () => {
+        const intervalId = setInterval(async () => {
             const response = await fetch(`/api/get-new-incidents?lastPollTime=${lastPollTime}`);
             const newIncidents = await response.json();
             if (newIncidents.length > 0) {
@@ -49,7 +49,9 @@ export default function IncidentsTable() {
                 setIncidents(newIncidents);
             }
             setLastPollTime(newIncidents[newIncidents.length - 1]?.incidentTime ?? lastPollTime);
-        }, 2500);
+        }, 5000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     return (
